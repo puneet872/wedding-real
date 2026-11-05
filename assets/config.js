@@ -7,6 +7,7 @@
 window.WEDDING = {
 
   defaultLang: 'hi',
+  hindiDigits: false,                    // 1 2 3 (not १ २ ३) in the countdown and the pheras, as in the dates
 
   theme: {
     night: '#141B3F', paper: '#F6EEE0', primary: '#B8281A', gold: '#C9973A', ink: '#21140F',

@@ -36,7 +36,8 @@
   };
   const U = C.ui;
   const DEV = '०१२३४५६७८९';
-  const num = (n) => (lang === 'hi' ? String(n).replace(/\d/g, (d) => DEV[d]) : String(n));
+  // in Hindi, numbers are shown as १ २ ३ unless the config asks for 1 2 3 (hindiDigits: false)
+  const num = (n) => (lang === 'hi' && C.hindiDigits !== false ? String(n).replace(/\d/g, (d) => DEV[d]) : String(n));
 
   function applyLang(l) {
     lang = l;
