@@ -421,8 +421,12 @@ html[lang="hi"] .person__role { font-family: var(--f-display); font-weight: 400;
    EVENTS
    ========================================================================== */
 .events__intro { padding-block: clamp(70px, 10vw, 130px) clamp(60px, 7vw, 90px); }
-.gulal { list-style: none; padding: 0; margin: clamp(26px, 4vw, 48px) 0 clamp(24px, 3vw, 36px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 12px; }
-@media (min-width: 680px) { .gulal { grid-template-columns: repeat(5, 1fr); } }
+/* the row of events: centred, and only as wide as the number of events needs */
+.events__intro { text-align: center; }
+.events__intro .sec-title::after { margin-inline: auto; }
+.gulal { list-style: none; padding: 0; margin: clamp(26px, 4vw, 48px) auto clamp(24px, 3vw, 36px); display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 12px; }
+.gulal li { flex: 0 0 min(180px, calc((100% - 24px) / 3)); }
+@media (min-width: 680px) { .gulal { gap: 28px clamp(16px, 2.4vw, 36px); } .gulal li { flex-basis: min(190px, calc((100% - 4 * clamp(16px, 2.4vw, 36px)) / 5)); } }
 .gulal a { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; }
 .gulal svg { width: 100%; max-width: 150px; overflow: visible; transition: transform .35s var(--ease); }
 .gulal a:hover svg { transform: translateY(-6px) scale(1.04); }
