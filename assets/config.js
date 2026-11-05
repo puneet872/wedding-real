@@ -194,7 +194,7 @@ window.WEDDING = {
     coupleNamaste: 'art/couple-namaste.webp',               // the reception
     haldiBride: 'art/haldi-groom.webp', haldiHand: 'art/haldi-hand.webp', // Ashish on his chowki; the family's hands reach in with the haldi
     haldiCheeks: [[.43, .18], [.57, .18]],                  // where the turmeric lands (his cheeks), as fractions of the haldi image
-    haldiReach: 62,                                         // the angle the hands come in at (0 = from the sides, 90 = from above)
+    haldiReach: 8,                                          // the angle the hands come in at (0 = from the sides, 90 = from above): from the sides, as family sitting beside him
     mehendiHand: 'art/mehendi-groom-hand.webp', mehendiHandPlain: 'art/mehendi-groom-hand-plain.webp', // Ashish's hand, with and without mehendi
     mehendiCone: 'art/mehendi-cone.webp', mehendiConeTurn: 0, // the hand with the cone (tip at its bottom-left corner)
     mehendiHides: 'bride',                                  // the groom's side: Sapna's name hides in his mehendi

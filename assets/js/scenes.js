@@ -611,7 +611,7 @@
     };
     let step = 0, phase = 0, cur = null, giggle = 0;
     // the hands come down at an angle, from relatives standing either side of her
-    const ANG = (ART.haldiReach || 62) * Math.PI / 180, REACH = 330;
+    const ANG = (ART.haldiReach ?? 62) * Math.PI / 180, REACH = 330;
     const dirOf = (who) => [Math.cos(ANG) * (who ? -1 : 1), Math.sin(ANG)];
     const restOf = (who, p) => { const d = dirOf(who); return [p.x - d[0] * REACH, p.y - d[1] * REACH]; };
     const tilt = (who) => (who ? -1 : 1) * ANG * 180 / Math.PI;
