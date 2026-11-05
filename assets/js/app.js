@@ -241,7 +241,8 @@
   function eventArt(e) {
     switch (e.scene) {
       case 'haldi': return S.haldi();
-      case 'mehendi': return S.mehendi({ groomName: esc(t(G.first, 'en')), label: esc(t(U.findName)) }) +
+      // the groom's name hides on the bride's hand, or (art.mehendiHides: 'bride') the bride's on the groom's
+      case 'mehendi': return S.mehendi({ hiddenName: esc(t(((C.art || {}).mehendiHides === 'bride' ? B : G).first, 'en')), label: esc(t(U.findName)) }) +
         `<div class="mh-caption"><p>${T(U.findName, 'b')} ${T(U.findNameText)}</p><p class="mh-status" data-mh-status aria-live="polite">${T(U.findTap)}</p><button class="text-btn" type="button" data-mh-reveal>${T(U.findGiveUp)}</button></div>`;
       case 'sangeet': return S.sangeet() + `<div class="dhol-wrap">${S.dhol()}<div class="dhol-ctrl"><button class="btn btn--gold" type="button" data-dhol-play aria-pressed="false"${TA(['data-play', U.playDhol], ['data-stop', U.stopDhol])}><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span data-label>${t(U.playDhol)}</span></button>${T(U.tapDhol, 'p', ' class="dhol-hint"')}</div></div>`;
       case 'baraat': return S.baraat();
@@ -259,7 +260,7 @@
           <h3 class="ev__name" id="ev-${e.id}-t">${T(e.name)}</h3>
           ${T(e.about, 'p', ' class="ev__about"')}
           <dl class="facts">
-            <div><dt>${T(U.when)}</dt><dd>${T(e.time)}</dd></div>
+            ${e.time ? `<div><dt>${T(U.when)}</dt><dd>${T(e.time)}</dd></div>` : ''}
             <div><dt>${T(U.where)}</dt><dd>${T(e.venue)}</dd></div>
           </dl>
           ${tl}
@@ -700,13 +701,19 @@
 
   /* ---------------- calendar ---------------- */
   const icsDate = (iso) => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  // an event given only a date (start: '2026-11-28') goes in the calendar as an all-day event
+  const allDay = (e) => e.start.length <= 10;
+  const ymd = (d) => d.slice(0, 10).replace(/-/g, '');
+  const dayAfter = (d) => { const x = new Date(d.slice(0, 10) + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + 1); return ymd(x.toISOString()); };
+  const icsWhen = (e) => allDay(e) ? [`DTSTART;VALUE=DATE:${ymd(e.start)}`, `DTEND;VALUE=DATE:${dayAfter(e.end || e.start)}`] : [`DTSTART:${icsDate(e.start)}`, `DTEND:${icsDate(e.end)}`];
+  const gcalWhen = (e) => allDay(e) ? `${ymd(e.start)}/${dayAfter(e.end || e.start)}` : `${icsDate(e.start)}/${icsDate(e.end)}`;
   const icsEsc = (s) => String(s).replace(/\\/g, '\\\\').replace(/([,;])/g, '\\$1').replace(/\n/g, '\\n');
   const evTitle = (e) => `${t(e.name)} · ${t(B.first)} ${t(C.couple.joiner)} ${t(G.first)}`;
   function downloadIcs(list) {
     const now = icsDate(new Date().toISOString());
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Shubh Vivah//EN', 'CALSCALE:GREGORIAN'];
-    list.forEach((e) => lines.push('BEGIN:VEVENT', `UID:${e.id}-${e.start.slice(0, 10)}@shubh-vivah`, `DTSTAMP:${now}`, `DTSTART:${icsDate(e.start)}`, `DTEND:${icsDate(e.end)}`,
-      `SUMMARY:${icsEsc(evTitle(e))}`, `LOCATION:${icsEsc(t(e.venue))}`, `DESCRIPTION:${icsEsc(t(e.wear.text))}`, 'END:VEVENT'));
+    list.forEach((e) => lines.push('BEGIN:VEVENT', `UID:${e.id}-${e.start.slice(0, 10)}@shubh-vivah`, `DTSTAMP:${now}`, ...icsWhen(e),
+      `SUMMARY:${icsEsc(evTitle(e))}`, `LOCATION:${icsEsc(t(e.venue))}`, `DESCRIPTION:${icsEsc(e.about ? t(e.about) : '')}`, 'END:VEVENT'));
     lines.push('END:VCALENDAR');
     const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([lines.join('\r\n')], { type: 'text/calendar' })), download: list.length > 1 ? 'wedding.ics' : `wedding-${list[0].id}.ics` });
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -717,7 +724,7 @@
       const e = C.events.find((x) => x.id === b.dataset.cal);
       if (!e) return;
       if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) return downloadIcs([e]);
-      const q = new URLSearchParams({ action: 'TEMPLATE', text: evTitle(e), dates: `${icsDate(e.start)}/${icsDate(e.end)}`, details: t(e.about), location: t(e.venue), ctz: 'Asia/Kolkata' });
+      const q = new URLSearchParams({ action: 'TEMPLATE', text: evTitle(e), dates: gcalWhen(e), details: t(e.about), location: t(e.venue), ctz: 'Asia/Kolkata' });
       window.open(`https://calendar.google.com/calendar/render?${q}`, '_blank', 'noopener');
     }
     if (ev.target.closest('[data-ics="all"]')) downloadIcs(C.events);

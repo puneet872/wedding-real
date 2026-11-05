@@ -430,6 +430,8 @@ html[lang="hi"] .person__role { font-family: var(--f-display); font-weight: 400;
 .events__intro .sec-title::after { margin-inline: auto; }
 .gulal { list-style: none; padding: 0; margin: clamp(26px, 4vw, 48px) auto clamp(24px, 3vw, 36px); display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 12px; }
 .gulal li { flex: 0 0 min(180px, calc((100% - 24px) / 3)); }
+/* on phones, four ceremonies sit two by two rather than three and one */
+@media (max-width: 679px) { .gulal:has(> li:nth-child(4):last-child) li { flex-basis: min(180px, calc((100% - 12px) / 2)); } }
 @media (min-width: 680px) { .gulal { gap: 28px clamp(16px, 2.4vw, 36px); } .gulal li { flex-basis: min(190px, calc((100% - 4 * clamp(16px, 2.4vw, 36px)) / 5)); } }
 .gulal a { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; }
 .gulal svg { width: 100%; max-width: 150px; overflow: visible; transition: transform .35s var(--ease); }

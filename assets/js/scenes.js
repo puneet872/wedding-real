@@ -682,7 +682,7 @@
     s += `<g clip-path="url(#mh-clip)"><g class="mh-ink" fill="none" stroke="${INK}" stroke-linecap="round" stroke-linejoin="round">${d.lines.map((l) => `<path d="${l.d}" stroke-width="${l.w}"/>`).join('')}</g>`;
     s += `<path class="mh-fill" d="${d.fills.join('')}" fill="${INK}"/>`;
     const n = d.nameAt;
-    s += `<text class="mh-name" x="${f(n.x)}" y="${f(n.y)}" transform="rotate(${f(n.deg)} ${f(n.x)} ${f(n.y)}) translate(-2 3.6)" font-size="10">${c.groomName}</text></g>`;
+    s += `<text class="mh-name" x="${f(n.x)}" y="${f(n.y)}" transform="rotate(${f(n.deg)} ${f(n.x)} ${f(n.y)}) translate(-2 3.6)" font-size="10">${c.hiddenName}</text></g>`;
     s += `<circle class="mh-ring" cx="${f(n.x + 12 * Math.cos(n.deg * Math.PI / 180))}" cy="${f(n.y + 12 * Math.sin(n.deg * Math.PI / 180))}" r="40"/></g>`;
     return `<svg class="scene scene--mehendi" viewBox="-20 70 460 600" role="group" aria-label="${c.label}">${s}<g class="mh-cone">${cone}</g></svg>`;
   }
@@ -695,7 +695,7 @@
     const img = (src, cls) => `<image class="${cls}" href="${attr(src)}" x="${bx}" y="${by}" width="${bw}" height="${bh}" preserveAspectRatio="xMidYMax meet"/>`;
     s += `<defs><filter id="mh-soften" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
     if (plain) s += `<mask id="mh-reveal" maskUnits="userSpaceOnUse" x="-20" y="70" width="460" height="600"><path class="mh-brush" fill="none" stroke="#fff" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" filter="url(#mh-soften)"/><rect class="mh-all" x="-20" y="70" width="460" height="600" fill="#fff" style="opacity:0"/></mask>`;
-    s += `<g filter="url(#paper-lift)">${plain ? img(plain, 'mh-plain') : ''}<g class="mh-art"${plain ? ' mask="url(#mh-reveal)"' : ''}>${img(art('mehendiHand'), 'mh-hand-img')}<text class="mh-name" text-anchor="middle" x="0" y="0">${c.groomName}</text></g></g>`;
+    s += `<g filter="url(#paper-lift)">${plain ? img(plain, 'mh-plain') : ''}<g class="mh-art"${plain ? ' mask="url(#mh-reveal)"' : ''}>${img(art('mehendiHand'), 'mh-hand-img')}<text class="mh-name" text-anchor="middle" x="0" y="0">${c.hiddenName}</text></g></g>`;
     s += `<circle class="mh-ring" cx="0" cy="0" r="40"/>`;
     const coneArt = coneSrc ? `<g transform="rotate(${+(ART.mehendiConeTurn || 0)})"><image href="${attr(coneSrc)}" x="0" y="-360" width="360" height="360" preserveAspectRatio="xMinYMax meet" filter="url(#paper-lift)"/></g>` : vectorCone;
     return `<svg class="scene scene--mehendi scene--mehendi-art" viewBox="-20 70 460 600" role="group" aria-label="${c.label}">${s}<g class="mh-cone"${plain ? '' : ' style="opacity:0"'}>${coneArt}</g></svg>`;

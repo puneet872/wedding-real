@@ -85,6 +85,26 @@ window.WEDDING = {
       about: { en: 'The tilak ceremony, followed by a feast at our home.', hi: 'शुभ तिलकोत्सव, एवं निज निवास पर प्रीतिभोज।' }
     },
     {
+      id: 'haldi', scene: 'haldi',
+      color: '#EFAE1F', ink: '#FFFFFF', accent: '#8E1F0C',
+      name: { en: 'Haldi', hi: 'हल्दी' },
+      day: { en: 'Saturday, 28 November', hi: 'शनिवार, 28 नवम्बर' },
+      start: '2026-11-28', end: '2026-11-28',
+      venue: { en: 'Our home, Bairidih, P.O. Lalganj, Azamgarh', hi: 'निज निवास, ग्राम बैरीडीह, पो० लालगंज, आजमगढ़' },
+      map: 'https://www.google.com/maps/search/?api=1&query=Bairidih+Lalganj+Azamgarh',
+      about: { en: 'The haldi ceremony for the groom, at our home.', hi: 'निज निवास पर दूल्हे की हल्दी की रस्म।' }
+    },
+    {
+      id: 'mehendi', scene: 'mehendi',
+      color: '#A9C07A', ink: '#4A2510', accent: '#7C1F0C',
+      name: { en: 'Mehendi', hi: 'मेहंदी' },
+      day: { en: 'Sunday, 29 November', hi: 'रविवार, 29 नवम्बर' },
+      start: '2026-11-29', end: '2026-11-29',
+      venue: { en: 'Our home, Bairidih, P.O. Lalganj, Azamgarh', hi: 'निज निवास, ग्राम बैरीडीह, पो० लालगंज, आजमगढ़' },
+      map: 'https://www.google.com/maps/search/?api=1&query=Bairidih+Lalganj+Azamgarh',
+      about: { en: 'The mehendi ceremony for the groom, at our home.', hi: 'निज निवास पर दूल्हे की मेहंदी की रस्म।' }
+    },
+    {
       id: 'baraat', scene: 'baraat',
       color: '#9E1F14', ink: '#FBF3E4', accent: '#FFD36B',
       name: { en: 'Baraat', hi: 'बारात' },
@@ -172,13 +192,14 @@ window.WEDDING = {
     brideGreet: 'art/bride-greet.webp', groomGreet: 'art/groom-greet.webp', // shown when a guest taps them
     coupleVarmala: 'art/couple-varmala.webp',               // the hero, under the mandap
     coupleNamaste: 'art/couple-namaste.webp',               // the reception
-    haldiBride: '', haldiHand: '', // the bride on her chowki; a hand reaching in from the left
-    haldiCheeks: [[.455, .225], [.615, .215]],              // where the turmeric lands, as fractions of the haldi image
+    haldiBride: 'art/haldi-groom.webp', haldiHand: 'art/haldi-hand.webp', // Ashish on his chowki; the family's hands reach in with the haldi
+    haldiCheeks: [[.43, .18], [.57, .18]],                  // where the turmeric lands (his cheeks), as fractions of the haldi image
     haldiReach: 62,                                         // the angle the hands come in at (0 = from the sides, 90 = from above)
-    mehendiHand: '', mehendiHandPlain: '', // the same hand with and without mehendi
-    mehendiCone: '', mehendiConeTurn: 0, // the artist's hand and cone (tip at its bottom-left corner); turn it by degrees if wanted
-    mehendiName: { x: .705, y: .335, rotate: -62, size: .05 }, // where the groom's name hides on the hand
-    mehendiZone: [0, .01, 1, .69],                          // the part of the image the cone colours in (x0, y0, x1, y1)
+    mehendiHand: 'art/mehendi-groom-hand.webp', mehendiHandPlain: 'art/mehendi-groom-hand-plain.webp', // Ashish's hand, with and without mehendi
+    mehendiCone: 'art/mehendi-cone.webp', mehendiConeTurn: 0, // the hand with the cone (tip at its bottom-left corner)
+    mehendiHides: 'bride',                                  // the groom's side: Sapna's name hides in his mehendi
+    mehendiName: { x: .885, y: .52, rotate: -90, size: .046 }, // where her name hides: beside the big circle, along the edge of his palm
+    mehendiZone: [0, 0, 1, .7],                             // the part of the image the cone colours in (x0, y0, x1, y1)
     sangeetBride: ['art/sangeet-bride-1.webp', 'art/sangeet-bride-2.webp'], // two dance poses each; they swap on the dhol beats
     sangeetGroom: ['art/sangeet-groom-1.webp', 'art/sangeet-groom-2.webp'],
     baraatGroom: 'art/baraat-groom.webp', baraatDholi: 'art/baraat-dholi.webp', baraatDancers: ['art/baraat-dancer-1.webp', 'art/baraat-dancer-2.webp'],
@@ -237,13 +258,13 @@ window.WEDDING = {
     playDhol: { en: 'Play the dhol', hi: 'ढोल बजाइए' }, stopDhol: { en: 'Stop', hi: 'रोकें' },
     tapDhol: { en: 'Or tap the dhol yourself', hi: 'या ख़ुद ढोल पर थाप दें' },
     findName: { en: 'Find the name!', hi: 'नाम ढूँढो!' },
-    findNameText: { en: 'The groom’s name is hidden in her mehendi. Tap where you think it is.', hi: 'दुल्हन की मेहंदी में दूल्हे का नाम छिपा है। जहाँ लगे, वहाँ छुएँ।' },
+    findNameText: { en: 'The bride’s name is hidden in the groom’s mehendi. Tap where you think it is.', hi: 'दूल्हे की मेहंदी में दुल्हन का नाम छिपा है। जहाँ लगे, वहाँ छुएँ।' },
     findTap: { en: '', hi: '' },
     findGiveUp: { en: 'I give up — show me', hi: 'हार मान ली — दिखाइए' },
-    found: { en: 'Found it! The groom is going to be so annoyed.', hi: 'मिल गया! दूल्हे राजा तो चिढ़ जाएँगे।' },
-    revealed: { en: 'There — tucked inside a paisley. Don’t tell him.', hi: 'ये रहा — कैरी के अंदर छुपा। उन्हें मत बताना।' },
+    found: { en: 'Found it! Now don’t tell the bride.', hi: 'मिल गया! दुल्हन को मत बताना।' },
+    revealed: { en: 'There — tucked beside the big circle on his palm.', hi: 'ये रहा — हथेली के बड़े गोले के पास छुपा।' },
     warm: { en: 'Warm — very close!', hi: 'गरम! बहुत पास।' }, cold: { en: 'Cold. Keep looking.', hi: 'ठंडा। और ढूँढिए।' },
-    hint: { en: 'Hint: artists hide names inside a paisley.', hi: 'इशारा: नाम अक्सर कैरी के अंदर छुपाते हैं।' },
+    hint: { en: 'Hint: look around the big circle on his palm.', hi: 'इशारा: हथेली के बड़े गोले के आस-पास देखिए।' },
     step: { en: 'Step', hi: 'फेरा' }, of: { en: 'of', hi: 'में से' },
     next: { en: 'Next step', hi: 'अगला फेरा' }, prev: { en: 'Previous', hi: 'पिछला' }, again: { en: 'Walk again', hi: 'फिर से' },
     ordinals: { en: ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'], hi: ['पहला', 'दूसरा', 'तीसरा', 'चौथा', 'पाँचवाँ', 'छठा', 'सातवाँ'] },
