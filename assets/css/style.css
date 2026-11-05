@@ -320,9 +320,12 @@ html[lang="hi"] .hero__kicker { font-family: var(--f-display); font-size: 1.15re
 /* shared SVG animation bits */
 .sway { transform-box: fill-box; transform-origin: 50% 0; animation: sway var(--dur, 5s) ease-in-out var(--delay, 0s) infinite alternate; }
 @keyframes sway { from { transform: rotate(calc(var(--a, 3deg) * -1)); } to { transform: rotate(var(--a, 3deg)); } }
-.bulbs circle { fill: #FFE7A8; animation: bulb 2s ease-in-out infinite alternate; }
+.bulbs circle { fill: #FFE7A8; }
+.bulbs > g { animation: bulb 1.8s steps(3, jump-none) infinite alternate; }
+.bulbs > g:nth-child(2) { animation-delay: -.6s; }
+.bulbs > g:nth-child(3) { animation-delay: -1.2s; }
 @keyframes bulb { from { opacity: .35; } to { opacity: 1; } }
-.twinkle-lights { animation: shimmer 2.4s ease-in-out infinite alternate; }
+.twinkle-lights { animation: shimmer 2.4s steps(3, jump-none) infinite alternate; }
 @keyframes shimmer { from { opacity: .55; } to { opacity: 1; } }
 .diya-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 1.5s ease-in-out var(--fd, 0s) infinite alternate; }
 @keyframes flicker { 0% { transform: scale(1, 1) skewX(0); } 30% { transform: scale(.94, 1.08) skewX(3deg); } 60% { transform: scale(1.05, .94) skewX(-2deg); } 100% { transform: scale(.98, 1.04) skewX(1deg); } }
@@ -366,7 +369,7 @@ html[lang="hi"] .hero__kicker { font-family: var(--f-display); font-size: 1.15re
 .card :is(.shloka, .inv__host, .inv__name, .kid__label),
 .card :is(.shloka__meaning, .sec-title, .inv__line, .inv__small, .inv__name small) {
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
-  background-size: 260% 100%; animation: shine 5.5s linear infinite;
+  background-size: 260% 100%; animation: shine 8s ease-in-out infinite;
 }
 .card :is(.shloka, .inv__host, .inv__name, .kid__label) { background-image: var(--teal); filter: drop-shadow(0 1px 0 rgba(4, 50, 52, .25)); }
 .card :is(.shloka__meaning, .sec-title, .inv__line, .inv__small, .inv__name small) { background-image: var(--powder); filter: drop-shadow(0 1px 0 rgba(20, 45, 80, .22)); font-family: var(--f-script); font-style: normal; }
@@ -377,7 +380,8 @@ html[lang="hi"] .hero__kicker { font-family: var(--f-display); font-size: 1.15re
 .card .shloka__meaning { font-size: 1.12rem; font-weight: 500; }
 .card .inv__name small { font-weight: 600; }
 .card .inv__host { font-family: var(--f-display); font-weight: 400; font-size: 1.45rem; }
-@keyframes shine { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+/* a sweep of light, then a rest: nothing is repainted while the lettering rests */
+@keyframes shine { 0% { background-position: 130% 0; } 40%, 100% { background-position: -130% 0; } }
 .kid { color: #E8452F; font-family: var(--f-baby); transform: rotate(-3deg); max-width: 22em; }
 .kid p { margin: 0; }
 .kid__label { font-family: var(--f-display) !important; font-size: 1.2rem; }
@@ -476,7 +480,8 @@ html[lang="hi"] .facts dt, html[lang="hi"] .wear__label { font-family: var(--f-d
 .chips li::before { content: ""; width: 22px; height: 22px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, .25); }
 .ev__actions { display: flex; flex-wrap: wrap; gap: 10px; }
 /* sangeet on a light pink: warm bulbs and soft white spotlights so the stage still glows */
-#ev-sangeet .bulbs circle { fill: #F2A20C; filter: drop-shadow(0 0 3px rgba(255, 190, 40, .9)); }
+#ev-sangeet .bulbs circle { fill: #F2A20C; }
+#ev-sangeet .bulbs > g { filter: drop-shadow(0 0 3px rgba(255, 190, 40, .9)); }
 #ev-sangeet .beams path { fill: #FFFFFF; }
 #ev-haldi .ev__info { text-shadow: 0 1px 2px rgba(110, 55, 0, .45), 0 0 14px rgba(150, 80, 0, .25); }
 
@@ -763,7 +768,7 @@ html.glass .paksh__after { color: var(--gd); }
    glass (theme.glass, on when hero photos are set)
    ========================================================================== */
 html.glass {
-  --glass: rgba(20, 11, 6, .5);
+  --glass: rgba(20, 11, 6, .58);
   --glass-hi: rgba(255, 244, 222, .07);
   --glass-line: rgba(255, 226, 170, .18);
   --tx: #F8EFE1;
@@ -781,7 +786,8 @@ html.glass :is(.invite .card, .couple > .wrap, .events__intro, .ev:not(.ev--bara
   background: linear-gradient(180deg, var(--glass-hi), rgba(255, 244, 222, 0) 40%), var(--glass);
   border: 1px solid var(--glass-line); border-radius: 26px;
   box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .08);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2);
+  /* no backdrop blur: the photo behind is already blurred, and re-blurring it under every panel
+     on every frame of a scroll is what made phones stutter */
 }
 html.glass :is(.couple > .wrap, .events__intro, .vows > .wrap, .family > .wrap, .travel > .wrap) { padding: clamp(24px, 4.5vw, 60px) clamp(18px, 4vw, 56px); }
 html.glass :is(.invite, .couple, .vows, .family, .travel, .rsvp) { background: none; padding-block: clamp(20px, 4vw, 48px); }

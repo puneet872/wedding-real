@@ -30,16 +30,43 @@
     kick();
     return it;
   }
+  // The scenes are decoration, so they move at about 30 frames a second: half the work of the
+  // screen's full rate, which leaves the phone free to keep the scroll itself smooth.
+  // The page's scroll and size are read once at the start of each frame, before anything is
+  // drawn, so no scene has to measure the page while others are changing it.
+  const STEP = 1000 / 30 - 4;
+  const view = { y: 0, w: 0, h: 0 };
   function kick() {
     if (reduce || raf) return;
-    let last = performance.now();
+    let last = 0;
     const loop = (now) => {
-      const dt = Math.min(.05, (now - last) / 1000); last = now;
-      let any = false;
-      items.forEach((it) => { if (it.on) { any = true; it.fn((now - it.t0) / 1000, dt); } });
-      raf = any ? requestAnimationFrame(loop) : 0;
+      raf = 0;
+      if (!items.some((it) => it.on)) return;
+      raf = requestAnimationFrame(loop);
+      if (last && now - last < STEP) return;
+      const dt = last ? Math.min(.05, (now - last) / 1000) : 1 / 30;
+      last = now;
+      view.y = scrollY; view.w = innerWidth; view.h = innerHeight;
+      items.forEach((it) => { if (it.on) it.fn((now - it.t0) / 1000, dt); });
     };
     raf = requestAnimationFrame(loop);
+  }
+
+  // A canvas's size, kept up to date by the browser instead of measured on every frame.
+  // Soft drifting things don't need the screen's full sharpness: 1.5x is plenty, and it
+  // keeps the canvas small enough for a phone to redraw cheaply.
+  function canvasBox(canvas, ctx) {
+    const box = { width: 0, height: 0 };
+    const set = (w, h) => {
+      const d = Math.min(1.5, devicePixelRatio || 1), W = Math.round(w * d), H = Math.round(h * d);
+      box.width = w; box.height = h;
+      if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; ctx.setTransform(d, 0, 0, d, 0, 0); }
+    };
+    const r = canvas.getBoundingClientRect();
+    set(r.width, r.height);
+    if ('ResizeObserver' in window) new ResizeObserver((es) => { const c = es[es.length - 1].contentRect; set(c.width, c.height); }).observe(canvas);
+    else addEventListener('resize', () => { const q = canvas.getBoundingClientRect(); set(q.width, q.height); });
+    return box;
   }
 
   /* ---------------- toran ---------------- */
@@ -117,14 +144,15 @@
   function fairy(x1, y1, x2, y2, sag, n, cls = 'bulbs') {
     let d = `M${x1} ${y1}Q${(x1 + x2) / 2} ${Math.max(y1, y2) + sag * 2} ${x2} ${y2}`;
     let s = `<path d="${d}" fill="none" stroke="#2A1E16" stroke-width="1" opacity=".6"/>`;
-    s += `<g class="${cls}">`;
+    // every third bulb belongs to the same set; the three sets blink in turn
+    const sets = ['', '', ''];
     for (let i = 1; i < n; i++) {
       const t = i / n;
       const x = (1 - t) * (1 - t) * x1 + 2 * (1 - t) * t * (x1 + x2) / 2 + t * t * x2;
       const y = (1 - t) * (1 - t) * y1 + 2 * (1 - t) * t * (Math.max(y1, y2) + sag * 2) + t * t * y2;
-      s += `<circle cx="${f(x)}" cy="${f(y + 3)}" r="2.6" style="animation-delay:${(-(i * 0.37) % 2).toFixed(2)}s"/>`;
+      sets[i % 3] += `<circle cx="${f(x)}" cy="${f(y + 3)}" r="2.6"/>`;
     }
-    return s + '</g>';
+    return s + `<g class="${cls}">` + sets.map((b) => `<g>${b}</g>`).join('') + '</g>';
   }
 
   /* ---------------- fireworks on a canvas ---------------- */
@@ -134,11 +162,7 @@
     const parts = [];
     let next = .4;
     const cols = opts.colors || ['#FFD36B', '#FF8DB6', '#FFFFFF', '#9BE36B', '#FFB443', '#8FD3FF'];
-    const size = () => {
-      const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-      if (canvas.width !== Math.round(r.width * d)) { canvas.width = Math.round(r.width * d); canvas.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
-      return r;
-    };
+    const r = canvasBox(canvas, ctx);
     const burst = (w, h) => {
       const x = w * (.15 + Math.random() * .7), y = h * (.1 + Math.random() * (opts.maxY || .35));
       const c = cols[(Math.random() * cols.length) | 0], n = 46 + (Math.random() * 30 | 0), sp = 1.4 + Math.random() * 1.2;
@@ -148,7 +172,6 @@
       }
     };
     animate(canvas, (t, dt) => {
-      const r = size();
       ctx.clearRect(0, 0, r.width, r.height);
       next -= dt;
       if (next <= 0) { burst(r.width, r.height); next = (opts.every || 1.6) * (.6 + Math.random() * .8); }
@@ -185,9 +208,9 @@
     if (!ctx) return;
     const cols = ['#FFF6D6', '#FFE7A8', '#F6D58A', '#FFFFFF', '#E9C26A'];
     let ps = [], shoot = null, nextShoot = 2.5;
+    const r = canvasBox(canvas, ctx);
     animate(canvas, (t, dt) => {
-      const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-      if (canvas.width !== Math.round(r.width * d)) { canvas.width = Math.round(r.width * d); canvas.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+      if (!r.width) return;
       if (!ps.length) ps = Array.from({ length: n }, () => ({ x: Math.random() * r.width, y: Math.random() * r.height, s: 2.2 + Math.random() * 3.6, v: 8 + Math.random() * 16, a: Math.random() * 6, w: Math.random() * 6, tw: 1.5 + Math.random() * 2.5, c: cols[(Math.random() * cols.length) | 0] }));
       ctx.clearRect(0, 0, r.width, r.height);
       ps.forEach((p) => {
@@ -219,16 +242,16 @@
     if (!ctx) return;
     const kinds = [['#FFFDF8', '#E8DDF4', '#B8281A'], ['#EADCF7', '#D4C0EC', '#C9973A'], ['#FCE8EF', '#F3CADA', '#B8281A'], ['#FFF4D6', '#F2DFA8', '#8E44AD']];
     let ps = [];
+    const r = canvasBox(canvas, ctx);
     animate(canvas, (t, dt) => {
-      const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-      if (canvas.width !== Math.round(r.width * d)) { canvas.width = Math.round(r.width * d); canvas.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+      if (!r.width) return;
       if (!ps.length) ps = Array.from({ length: n }, () => ({ x: Math.random() * r.width, y: Math.random() * r.height, s: 20 + Math.random() * 10, v: 16 + Math.random() * 20, a: (Math.random() - .5) * .8, w: Math.random() * 6, k: kinds[(Math.random() * kinds.length) | 0] }));
       ctx.clearRect(0, 0, r.width, r.height);
       ps.forEach((p) => {
         p.y += p.v * dt; p.w += dt * 1.3; p.x += Math.sin(p.w) * 14 * dt;
         if (p.y > r.height + 20) { p.y = -20; p.x = Math.random() * r.width; }
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a + Math.sin(p.w) * .35); ctx.scale(1, .75 + .25 * Math.abs(Math.cos(p.w)));
-        ctx.globalAlpha = innerWidth < 640 ? .5 : .85; drawEnvelope(ctx, p.s, p.k[0], p.k[1], p.k[2]); ctx.restore();
+        ctx.globalAlpha = view.w < 640 ? .5 : .85; drawEnvelope(ctx, p.s, p.k[0], p.k[1], p.k[2]); ctx.restore();
       });
       ctx.globalAlpha = 1;
     });
@@ -240,9 +263,9 @@
     if (!ctx) return;
     const cols = ['#E8731A', '#F2B318', '#F6A32B', '#C2301C', '#E0337A'];
     let ps = [];
+    const r = canvasBox(canvas, ctx);
     animate(canvas, (t, dt) => {
-      const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-      if (canvas.width !== Math.round(r.width * d)) { canvas.width = Math.round(r.width * d); canvas.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+      if (!r.width) return;
       if (!ps.length) ps = Array.from({ length: n }, () => ({ x: Math.random() * r.width, y: Math.random() * r.height, s: 3 + Math.random() * 5, v: 12 + Math.random() * 22, a: Math.random() * 6, w: Math.random() * 6, c: cols[(Math.random() * cols.length) | 0] }));
       ctx.clearRect(0, 0, r.width, r.height);
       ps.forEach((p) => {
@@ -995,10 +1018,15 @@
       return { el, role, i, T: el.getAttribute('transform'), life: P.alive(el, i * 1.7), rider, rT: rider && rider.getAttribute('transform'), rLife: rider && P.alive(rider, 9), poses: [...el.querySelectorAll('.pose')] };
     }).filter(Boolean);
     const sec = root.closest('section, article') || root;
+    // where the section sits on the page, re-read only when the page's layout changes
+    let secTop = 0, secH = 0;
+    const place = () => { const q = sec.getBoundingClientRect(); secTop = q.top + scrollY; secH = q.height; };
+    place(); addEventListener('resize', place);
+    if ('ResizeObserver' in window) new ResizeObserver(place).observe(document.body);
     animate(svg, (t) => {
       // the procession advances as the section scrolls through the viewport
-      const r = sec.getBoundingClientRect();
-      const prog = Math.min(1, Math.max(0, 1 - (r.top + r.height * .5) / (innerHeight + r.height * .5)));
+      const top = secTop - (view.y || scrollY), vh = view.h || innerHeight;
+      const prog = Math.min(1, Math.max(0, 1 - (top + secH * .5) / (vh + secH * .5)));
       crowd.setAttribute('transform', `translate(${f(-150 + prog * 300 + Math.sin(t * .7) * 4)} 404)`);
       const w = t * 2.4 * Math.PI;
       actors.forEach((a) => {

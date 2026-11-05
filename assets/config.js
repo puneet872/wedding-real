@@ -92,7 +92,7 @@ window.WEDDING = {
       time: { en: 'Sets off at 4:00 PM', hi: 'सायं 4:00 बजे प्रस्थान' },
       start: '2026-11-30T16:00:00+05:30', end: '2026-11-30T23:59:00+05:30',
       venue: { en: 'From our home in Bairidih to Heritage Marriage Hall, Sanjarpur, Sarai Mir, Azamgarh', hi: 'निज निवास, बैरीडीह से ‘हेरिटेज मैरेज हॉल’, संजरपुर, सरायमीर, आजमगढ़' },
-      map: 'https://scan.page/x2TYsh',               // the location QR on the baraat card
+      map: 'https://maps.app.goo.gl/fid8exWGxvKCJcPQ6', // Heritage Marriage Hall
       about: { en: 'The baraat leaves our home for the wedding at Heritage Marriage Hall.', hi: 'बारात हमारे निज निवास से विवाह स्थल ‘हेरिटेज मैरेज हॉल’ के लिए प्रस्थान करेगी।' }
     }
   ],
@@ -155,8 +155,8 @@ window.WEDDING = {
   },
 
   contacts: [],
-  rsvp: { whatsapp: '919598684872', to: { en: 'the Gond family', hi: 'गोंड़ परिवार' }, deadline: '' },
-  contact: { phone: '919598684872', show: '95986 84872' },
+  rsvp: { whatsapp: '919580895907', to: { en: 'the Gond family', hi: 'गोंड़ परिवार' }, deadline: '' },
+  contact: { phone: '919580895907', show: '95808 95907' },
 
   shagun: { en: 'Kindly grace us with your presence.', hi: 'कृपया पधार कर हमें अनुग्रहीत करें।' },
   hashtag: '',
