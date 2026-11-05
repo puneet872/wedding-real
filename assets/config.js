@@ -131,7 +131,7 @@ window.WEDDING = {
     groom: {                                         // right: those eager to see you
       title: { en: 'Eager to see you', hi: 'दर्शनाभिलाषी' },
       names: [
-        { en: 'Vinesh Gond', hi: 'विनेश गोंड़' },
+        { en: 'Dinesh Gond', hi: 'दिनेश गोंड़' },
         { en: 'Deepak Gond', hi: 'दीपक गोंड़' },
         { en: 'Pradeep Gond', hi: 'प्रदीप गोंड़' },
         { en: 'Ashok Gond', hi: 'अशोक गोंड़' },
@@ -143,7 +143,7 @@ window.WEDDING = {
         { en: 'Golu Gond', hi: 'गोलू गोंड़' },
         { en: 'Shani Gond', hi: 'शनि गोंड़' },
         { en: 'Manish', hi: 'मनीष' },
-        { en: 'Ashu', hi: 'अशु' },
+        { en: 'Anshu', hi: 'अंशु' },
         { en: 'Ankit', hi: 'अंकित' },
         { en: 'Krishna', hi: 'कृष्णा' },
         { en: 'Aaron', hi: 'आरोन' },
